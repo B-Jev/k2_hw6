@@ -2,34 +2,41 @@ package pro.sky.skyprok2hw6;
 
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class EmployeeService {
-    List<Employee> employees = new ArrayList<>();
+    Map<String, Employee> employeesFullName = new HashMap<>();
     private final int limit = 3;
+
+    private String getFullName(Employee employee) {
+        return employee.getLastName() + employee.getFirstName();
+    }
 
     public Employee addEmployee(String lastName, String firstName) {
         if (lastName.isBlank() || firstName.isBlank()) {
             throw new RuntimeException();
         }
-        if (employees.size() >= limit) {
+        if (employeesFullName.size() >= limit) {
             throw new EmployeeStoragelsFullException("Список сотрудников привышен");
         }
         Employee employeeNew = new Employee(lastName, firstName);
+        String fullName = getFullName(employeeNew);
 
-        if (employees.contains(employeeNew)) {
+
+        if (employeesFullName.containsKey(fullName)) {
             throw new EmployeeAlreadyAddedException("Такой сотрудник уже зарегестрирован");
         }
-        employees.add(employeeNew);
+        employeesFullName.put(fullName, employeeNew);
         return employeeNew;
     }
 
     public Employee removeEmployee(String lastName, String firstName) {
         Employee employeeRemove = new Employee(lastName, firstName);
-        if (employees.contains(employeeRemove)) {
-            employees.remove(employeeRemove);
+        String fullName = getFullName(employeeRemove);
+
+        if (employeesFullName.containsKey(fullName)) {
+            employeesFullName.remove(fullName, employeeRemove);
             return employeeRemove;
         } else {
             throw new EmployeeNotFoundException("Такого сотрудника нет.");
@@ -38,15 +45,16 @@ public class EmployeeService {
 
     public Employee findEmployee(String lastName, String firstName) {
         Employee employeeFind = new Employee(lastName, firstName);
+        String fullName = getFullName(employeeFind);
 
-        if (employees.contains(employeeFind)) {
-            return employees.get(employees.indexOf(employeeFind));
+        if (employeesFullName.containsKey(fullName)) {
+            return employeesFullName.get(fullName);
         } else {
             throw new EmployeeNotFoundException("Такого сотрудника в списке нет.");
         }
     }
 
-    public List<Employee> printAllEmployee() {
-        return employees;
+    public Collection<Employee> printAllEmployee() {
+        return employeesFullName.values();
     }
 }

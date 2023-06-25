@@ -32,6 +32,7 @@ public class Employee {
         Employee employee = (Employee) o;
         return Objects.equals(firstName, employee.firstName) && Objects.equals(lastName, employee.lastName);
     }
+
     @Override
     public String toString() {
         return "Employee{" +
