@@ -6,37 +6,36 @@ import java.util.*;
 
 @Service
 public class EmployeeService {
-    Map<String, Employee> employeesFullName = new HashMap<>();
-    private final int limit = 3;
-
-    private String getFullName(Employee employee) {
-        return employee.getLastName() + employee.getFirstName();
+    List<Employee> employees = new ArrayList<>();
+    public EmployeeService(){
+        employees.add(new Employee("Petrov","Aleksey",1000,1));
+        employees.add(new Employee("Petrov1","Aleksey",1100,1));
+        employees.add(new Employee("Petrov2","Aleksey",900,3));
+        employees.add(new Employee("Petrov3","Aleksey",1200,2));
+        employees.add(new Employee("Petrov4","Aleksey",800,2));
     }
+    private final int limit = 5;
 
     public Employee addEmployee(String lastName, String firstName) {
         if (lastName.isBlank() || firstName.isBlank()) {
             throw new RuntimeException();
         }
-        if (employeesFullName.size() >= limit) {
+        if (employees.size() >= limit) {
             throw new EmployeeStoragelsFullException("Список сотрудников привышен");
         }
         Employee employeeNew = new Employee(lastName, firstName);
-        String fullName = getFullName(employeeNew);
 
-
-        if (employeesFullName.containsKey(fullName)) {
+        if (employees.contains(employeeNew)) {
             throw new EmployeeAlreadyAddedException("Такой сотрудник уже зарегестрирован");
         }
-        employeesFullName.put(fullName, employeeNew);
+        employees.add(employeeNew);
         return employeeNew;
     }
 
     public Employee removeEmployee(String lastName, String firstName) {
         Employee employeeRemove = new Employee(lastName, firstName);
-        String fullName = getFullName(employeeRemove);
-
-        if (employeesFullName.containsKey(fullName)) {
-            employeesFullName.remove(fullName, employeeRemove);
+        if (employees.contains(employeeRemove)) {
+            employees.remove(employeeRemove);
             return employeeRemove;
         } else {
             throw new EmployeeNotFoundException("Такого сотрудника нет.");
@@ -45,16 +44,15 @@ public class EmployeeService {
 
     public Employee findEmployee(String lastName, String firstName) {
         Employee employeeFind = new Employee(lastName, firstName);
-        String fullName = getFullName(employeeFind);
 
-        if (employeesFullName.containsKey(fullName)) {
-            return employeesFullName.get(fullName);
+        if (employees.contains(employeeFind)) {
+            return employees.get(employees.indexOf(employeeFind));
         } else {
             throw new EmployeeNotFoundException("Такого сотрудника в списке нет.");
         }
     }
 
-    public Collection<Employee> printAllEmployee() {
-        return employeesFullName.values();
+    public List<Employee> printAllEmployee() {
+        return employees;
     }
 }
