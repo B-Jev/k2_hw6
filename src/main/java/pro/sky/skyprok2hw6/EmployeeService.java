@@ -1,5 +1,6 @@
 package pro.sky.skyprok2hw6;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -7,16 +8,22 @@ import java.util.*;
 @Service
 public class EmployeeService {
     List<Employee> employees = new ArrayList<>();
-    public EmployeeService(){
-        employees.add(new Employee("Petrov","Aleksey",1000,1));
-        employees.add(new Employee("Petrov1","Aleksey",1100,1));
-        employees.add(new Employee("Petrov2","Aleksey",900,3));
-        employees.add(new Employee("Petrov3","Aleksey",1200,2));
-        employees.add(new Employee("Petrov4","Aleksey",800,2));
-    }
+
+    //    public EmployeeService(){
+//        employees.add(new Employee("Petrov","Aleksey",1000,1));
+//        employees.add(new Employee("Petrov1","Aleksey",1100,1));
+//        employees.add(new Employee("Petrov2","Aleksey",900,3));
+//        employees.add(new Employee("Petrov3","Aleksey",1200,2));
+//        employees.add(new Employee("Petrov4","Aleksey",800,2));
+//    }
+
     private final int limit = 5;
 
     public Employee addEmployee(String lastName, String firstName) {
+
+        controlUpperCase(lastName, firstName);
+        controlAlpha(lastName, firstName);
+
         if (lastName.isBlank() || firstName.isBlank()) {
             throw new RuntimeException();
         }
@@ -30,6 +37,20 @@ public class EmployeeService {
         }
         employees.add(employeeNew);
         return employeeNew;
+    }
+
+    private void controlUpperCase(String lastName, String firstName) {
+        String capitalizeLastName = StringUtils.capitalize(lastName);
+        String capitalizeFirstName = StringUtils.capitalize(firstName);
+        if (!(lastName.equals(capitalizeLastName) && (firstName.equals(capitalizeFirstName)))) {
+            throw new IncorrectNameExeption("Имя и фамилия должны быть с заглавной буквы.");
+        }
+    }
+
+    private void controlAlpha(String lastName, String firstName) {
+        if (!(StringUtils.isAlpha(lastName) && (StringUtils.isAlpha(firstName)))) {
+            throw new IncorrectNameExeption("Имя или фамилия содержат не допустимые символы.");
+        }
     }
 
     public Employee removeEmployee(String lastName, String firstName) {
